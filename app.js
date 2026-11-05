@@ -75,11 +75,14 @@
     };
   });
 
-  // Highlight current nav item
-  var currentPage = (location.pathname.split('/').pop() || 'index.html');
+  // Highlight current nav item (supports clean URLs and .html fallbacks)
+  var rawCurrent = (location.pathname.split('/').pop() || '').replace(/\.html$/, '');
+  var currentPath = (!rawCurrent || rawCurrent === 'index') ? 'index' : rawCurrent;
+
   document.querySelectorAll('#lk a:not(.btn)').forEach(function(link) {
-    var href = link.getAttribute('href');
-    link.classList.toggle('on', href === currentPage);
+    var rawHref = (link.getAttribute('href') || '').replace(/\.html$/, '').replace(/^\.\/?/, '');
+    var linkTarget = (!rawHref || rawHref === '.') ? 'index' : rawHref;
+    link.classList.toggle('on', linkTarget === currentPath);
   });
 
   // Animated stat counters
