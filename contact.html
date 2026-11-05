@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -119,7 +119,10 @@
           </div>
         </div>
 
-        <form id="f">
+        <form id="f" method="POST" action="send-mail.php" enctype="multipart/form-data">
+          <div id="form-status" style="display:none"></div>
+          <input type="text" name="_hp" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
+
           <label>
             <span>Full Name <span style="color:var(--go)">*</span></span>
             <input name="n" required autocomplete="name" placeholder="e.g. John Mensah">
@@ -185,7 +188,7 @@
             <span>Your medical records are transmitted over 256-bit SSL encryption. Zero consultation fees.</span>
           </div>
 
-          <button class="btn" type="submit" data-t="c3" style="width:100%">
+          <button id="f-submit" class="btn" type="submit" data-t="c3" style="width:100%">
             <i class="fa-solid fa-paper-plane"></i> Send Treatment Enquiry
           </button>
         </form>

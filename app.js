@@ -205,22 +205,76 @@
     });
   }
 
-  // Contact form mailto submit
+  // Contact form submission to server endpoint
   var contactForm = document.getElementById('f');
+  var formStatus = document.getElementById('form-status');
+  var submitBtn = document.getElementById('f-submit');
+
   if (contactForm) {
     contactForm.onsubmit = function(evt) {
       evt.preventDefault();
-      var formData = new FormData(evt.target);
-      var body = 'Patient Name: ' + (formData.get('n') || '') + '\n' +
-                 'Country: ' + (formData.get('c') || '') + '\n' +
-                 'Phone / WhatsApp: ' + (formData.get('p') || '') + '\n' +
-                 'Specialty Needed: ' + (formData.get('s') || '') + '\n' +
-                 'Urgency: ' + (formData.get('urgency') || 'Standard') + '\n\n' +
-                 'Clinical Condition / Notes:\n' + (formData.get('m') || '');
 
-      location.href = 'mailto:info@legroenland.com?subject=' +
-                      encodeURIComponent('Patient Treatment Enquiry - ' + (formData.get('n') || '')) +
-                      '&body=' + encodeURIComponent(body);
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting to Medical Desk...';
+      }
+
+      if (formStatus) {
+        formStatus.style.display = 'none';
+        formStatus.className = '';
+        formStatus.innerHTML = '';
+      }
+
+      var formData = new FormData(contactForm);
+
+      fetch('send-mail.php', {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Accept': 'application/json'
+        },
+        body: formData
+      })
+      .then(function(res) {
+        return res.json().catch(function() {
+          return { success: res.ok, message: res.ok ? 'Enquiry submitted successfully.' : 'Server responded with an error.' };
+        });
+      })
+      .then(function(data) {
+        if (formStatus) {
+          formStatus.style.display = 'flex';
+          if (data.success) {
+            formStatus.className = 'form-alert success';
+            formStatus.innerHTML = '<i class="fa-solid fa-circle-check"></i> <div><strong>Thank you, ' + (data.name || 'Patient') + '!</strong><br>' +
+              (data.message || 'Your medical enquiry and reports have been delivered directly to our medical desk (info@legroenland.com). A coordinator will contact you within 12–24 hours.') +
+              '</div>';
+            contactForm.reset();
+            if (fileLabel) {
+              fileLabel.textContent = 'Attach MRI / CT scans or doctor summaries (PDF, JPG, PNG)';
+            }
+          } else {
+            formStatus.className = 'form-alert error';
+            formStatus.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> <div><strong>Notice:</strong> ' +
+              (data.message || 'We could not process your submission. Please try again or reach out on WhatsApp.') +
+              '</div>';
+          }
+          formStatus.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      })
+      .catch(function(err) {
+        if (formStatus) {
+          formStatus.style.display = 'flex';
+          formStatus.className = 'form-alert error';
+          formStatus.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> <div><strong>Notice:</strong> Unable to connect to server. Please try again or contact us directly at <a href="mailto:info@legroenland.com" style="color:inherit;text-decoration:underline;">info@legroenland.com</a> or WhatsApp.</div>';
+          formStatus.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      })
+      .finally(function() {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Treatment Enquiry';
+        }
+      });
     };
   }
 

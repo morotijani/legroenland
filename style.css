@@ -1321,6 +1321,49 @@ option {
   font-size: 14px;
 }
 
+.form-alert {
+  padding: 16px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 14.5px;
+  line-height: 1.55;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+  animation: fadeIn 0.3s ease;
+}
+
+.form-alert.success {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  color: #86efac;
+}
+
+.form-alert.success i {
+  color: #4ade80;
+  font-size: 18px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.form-alert.error {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+}
+
+.form-alert.error i {
+  color: #f87171;
+  font-size: 18px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .ci {
   margin-top: 28px;
   display: grid;
